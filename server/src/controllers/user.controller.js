@@ -450,7 +450,9 @@ const deleteProject = async (req, res) => {
     }
 
     if (process.env.NODE_ENV !== "production") {
-      console.log(`🗑️ Project '${project.name}' deleted by user '${user.fullname}'`);
+      console.log(
+        `🗑️ Project '${project.name}' deleted by user '${user.fullname}'`
+      );
     }
     return res.status(200).json({
       success: true,

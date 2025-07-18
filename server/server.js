@@ -1,7 +1,6 @@
-import connectDB from "./config/connectDB.js";
+import connectDB from "./src/config/connectDB.js";
 
-const startServer = async (app,PORT) => {
-
+const startServer = async (app, PORT) => {
   try {
     await connectDB();
     app.listen(PORT, () => {

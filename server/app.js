@@ -1,4 +1,4 @@
-import "./config/env.js";
+import "./src/config/env.js";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -7,8 +7,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import startServer from "./server.js";
-import usersRouter from "./routes/users.routes.js";
-import errorHandler from "./middlewares/errorHandler.js";
+import usersRouter from "./src/routes/users.routes.js";
+import errorHandler from "./src/middlewares/errorHandler.js";
 
 const app = express();
 const PORT = process.env.PORT || 5001;
