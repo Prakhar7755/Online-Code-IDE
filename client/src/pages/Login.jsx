@@ -52,7 +52,7 @@ const Login = () => {
         localStorage.setItem("isLoggedIn", "true");
 
         navigate("/");
-        window.location.reload();
+        // window.location.reload();
         // window.location.href = "/";
       } else {
         toast.error(data.message || "Login failed. Please try again.");
