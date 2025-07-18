@@ -24,7 +24,6 @@ const clientPath = path.join(__dirname, "../client/dist");
 app.use(express.json({ limit: "400kb" }));
 app.use(express.urlencoded({ extended: true, limit: "400kb" }));
 app.use(cookieParser());
-
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -51,6 +50,7 @@ app.use(
 // ---------------------------
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:5001",
   process.env.CORS_ORIGIN,
 ].filter(Boolean);
 

@@ -66,15 +66,15 @@ const Login = () => {
   };
 
   return (
-    <div className="con flex flex-col items-center justify-center min-h-screen">
+    <div className="con flex flex-col items-center justify-center min-h-screen px-4">
       <form
         onSubmit={submitForm}
-        className="w-[25vw] max-w-full h-auto flex flex-col items-center bg-[#0f0e0e] p-5 rounded-lg shadow-xl shadow-black/50"
+        className="w-full max-w-md h-auto flex flex-col items-center bg-[#0f0e0e] p-6 rounded-lg shadow-xl shadow-black/50"
       >
-        <img className="w-[230px] object-cover" src={logo} alt="logo" />
+        <img className="w-40 sm:w-[230px] object-cover" src={logo} alt="logo" />
 
         {/* EMAIL INPUT */}
-        <div className="inputBox">
+        <div className="inputBox w-full mt-4">
           <input
             type="email"
             name="email"
@@ -83,11 +83,12 @@ const Login = () => {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="w-full text-white"
           />
         </div>
 
         {/* PASSWORD FIELD */}
-        <div className="inputBox">
+        <div className="inputBox w-full mt-4">
           <input
             type="password"
             name="password"
@@ -96,10 +97,11 @@ const Login = () => {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="w-full text-white"
           />
         </div>
 
-        <p className="text-gray-400 text-sm mt-3 self-start">
+        <p className="text-gray-400 text-sm mt-3 self-start w-full">
           Don&apos;t have an account?{" "}
           <Link to="/signup" className="text-blue-500 hover:underline">
             Sign Up
@@ -109,7 +111,7 @@ const Login = () => {
         <button
           type="submit"
           disabled={loading}
-          className={`btnNormal mt-3 bg-blue-500 transition-all hover:bg-blue-600 ${
+          className={`btnNormal mt-4 bg-blue-500 transition-all hover:bg-blue-600 w-full ${
             loading ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >

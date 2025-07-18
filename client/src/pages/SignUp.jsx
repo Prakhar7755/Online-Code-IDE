@@ -1,7 +1,5 @@
-// import logo from "../images/logos/logo.png";
 import logo from "/image.png";
 import { Link, useNavigate } from "react-router-dom";
-// import { API_BASE_URL } from "../helper.js";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import api from "../lib/axios.js";
@@ -58,70 +56,74 @@ const SignUp = () => {
   };
 
   return (
-    <div className="con flex flex-col items-center justify-center min-h-screen">
-      <form
-        onSubmit={submitForm}
-        className="w-[25vw] max-w-full h-auto flex flex-col items-center bg-[#0f0e0e] p-5 rounded-lg shadow-xl shadow-black/50"
-      >
-        <img className="w-[230px] object-cover" src={logo} alt="logo" />
+  <div className="con flex flex-col items-center justify-center min-h-screen px-4">
+    <form
+      onSubmit={submitForm}
+      className="w-full max-w-md h-auto flex flex-col items-center bg-[#0f0e0e] p-6 rounded-lg shadow-xl shadow-black/50"
+    >
+      <img className="w-40 sm:w-[230px] object-cover" src={logo} alt="logo" />
 
-        {/* FULL NAME INPUT */}
-        <div className="inputBox">
-          <input
-            type="text"
-            name="fullname"
-            aria-label="Full Name"
-            placeholder="Full Name"
-            required
-            value={fullname}
-            onChange={(e) => setFullName(e.target.value)}
-          />
-        </div>
-
-        {/* EMAIL */}
-        <div className="inputBox">
-          <input
-            type="email"
-            name="email"
-            aria-label="Email"
-            placeholder="Email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        {/* PASSWORD */}
-        <div className="inputBox">
-          <input
-            type="password"
-            name="password"
-            aria-label="Password"
-            placeholder="Password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-
-        <p className="text-gray-400 text-sm mt-3 self-start">
-          Already have an account?{" "}
-          <Link to="/login" className="text-blue-500 hover:underline">
-            Login
-          </Link>
-        </p>
-
+      {/* FULL NAME INPUT */}
+      <div className="inputBox w-full mt-4">
         <input
-          type="submit"
-          disabled={loading}
-          value={loading ? "Signing Up..." : "Sign Up"}
-          className={`btnNormal mt-3 bg-blue-500 transition-all hover:bg-blue-600 ${
-            loading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          type="text"
+          name="fullname"
+          aria-label="Full Name"
+          placeholder="Full Name"
+          required
+          value={fullname}
+          onChange={(e) => setFullName(e.target.value)}
+          className="w-full"
         />
-      </form>
-    </div>
-  );
+      </div>
+
+      {/* EMAIL INPUT */}
+      <div className="inputBox w-full mt-4">
+        <input
+          type="email"
+          name="email"
+          aria-label="Email"
+          placeholder="Email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full"
+        />
+      </div>
+
+      {/* PASSWORD INPUT */}
+      <div className="inputBox w-full mt-4">
+        <input
+          type="password"
+          name="password"
+          aria-label="Password"
+          placeholder="Password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full"
+        />
+      </div>
+
+      <p className="text-gray-400 text-sm mt-3 self-start w-full">
+        Already have an account?{" "}
+        <Link to="/login" className="text-blue-500 hover:underline">
+          Login
+        </Link>
+      </p>
+
+      <input
+        type="submit"
+        disabled={loading}
+        value={loading ? "Signing Up..." : "Sign Up"}
+        className={`btnNormal mt-4 bg-blue-500 transition-all hover:bg-blue-600 w-full ${
+          loading ? "opacity-50 cursor-not-allowed" : ""
+        }`}
+      />
+    </form>
+  </div>
+);
+
 };
 
 export default SignUp;
