@@ -51,9 +51,9 @@ const Login = () => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("isLoggedIn", "true");
 
-        navigate("/");
+        // navigate("/");
         // window.location.reload();
-        // window.location.href = "/";
+        window.location.href = "/";
       } else {
         toast.error(data.message || "Login failed. Please try again.");
       }
