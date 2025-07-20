@@ -164,7 +164,7 @@ const Home = () => {
 
       if (data.success) {
         getProjects();
-        toast.success(data.message)
+        toast.success(data.message);
       } else {
         toast.error(data.message);
       }
@@ -262,6 +262,7 @@ const Home = () => {
                   src={getLanguageIcon(project.projectLanguage)}
                   alt={project.projectLanguage}
                   className="w-[120px] h-[90px] object-contain rounded"
+                  loading="lazy"
                 />
                 <div>
                   <h3 className="text-xl font-semibold text-white">

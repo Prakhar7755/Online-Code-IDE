@@ -76,6 +76,7 @@ const Login = () => {
           className="w-32 sm:w-40 lg:w-48 object-contain mb-6"
           src={logo}
           alt="logo"
+            loading="lazy"
         />
 
         {/* EMAIL INPUT */}
