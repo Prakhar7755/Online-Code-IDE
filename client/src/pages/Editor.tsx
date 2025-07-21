@@ -1,39 +1,54 @@
-import { useEffect, useState, useCallback } from "react";
-import Navbar from "../components/Navbar.jsx";
+import React, { useEffect, useState, useCallback } from "react";
+import Navbar from "../components/Navbar.js";
 import MonacoEditor from "@monaco-editor/react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../lib/axios.js";
-// import axios from "axios";
+import { AxiosError } from "axios";
 
-const Editor = () => {
-  const [code, setCode] = useState("");
-  const [output, setOutput] = useState("");
-  const [error, setError] = useState(false);
-  const [projectData, setProjectData] = useState(null);
-  const [running, setRunning] = useState(false);
+interface PistonResponse {
+  run: {
+    stdout: string;
+    stderr: string;
+    code: number;
+    output?: string; // not always
+  };
+}
 
-  const { id } = useParams();
+type SupportedLanguage =
+  | "python"
+  | "java"
+  | "javascript"
+  | "c"
+  | "cpp"
+  | "bash";
+
+interface ProjectData {
+  name: string;
+  projectLanguage: SupportedLanguage;
+  version: string;
+  code: string;
+  // space for other properties
+}
+
+const Editor: React.FC = () => {
+  const [code, setCode] = useState<string>("");
+  const [output, setOutput] = useState<string>("");
+  const [error, setError] = useState<boolean>(false);
+  const [projectData, setProjectData] = useState<ProjectData | null>(null);
+  const [running, setRunning] = useState<boolean>(false);
+
+  const { id } = useParams<{ id: string }>();
 
   // Fetch project on mount
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        // const res = await fetch(`${API_BASE_URL}/project/${id}`, {
-        //   method: "GET",
-        //   mode: "cors",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     Authorization: `Bearer ${localStorage.getItem("token")}`,
-        //   },
-        //   // body: JSON.stringify({
-        //   //   // token: localStorage.getItem("token"),
-        //   //   projectId: id,
-        //   // }),
-        // });
-        // const data = await res.json();
-
-        const res = await api.get(`/project/${id}`, {
+        const res = await api.get<{
+          success: boolean;
+          project: ProjectData;
+          message?: string;
+        }>(`/project/${id}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -48,9 +63,14 @@ const Editor = () => {
         } else {
           toast.error(data.message || "Failed to fetch project");
         }
-      } catch (err) {
-        console.error("Error fetching project:", err);
-        toast.error(err.message || "Failed to load project.");
+      } catch (err: unknown) {
+        if (err instanceof AxiosError) {
+          console.error("Error fetching project via Axios:", err);
+          toast.error(err.message || "Failed to load/fetch project.");
+        } else {
+          console.error("Error fetching project:", err);
+          toast.error("Failed to load project.");
+        }
       }
     };
 
@@ -60,9 +80,12 @@ const Editor = () => {
   // Save project to backend
   const saveProject = useCallback(async () => {
     try {
-      const trimmedCode = code?.toString().trim();
+      const trimmedCode = code.trim();
 
-      const res = await api.put(
+      const res = await api.put<{
+        success: boolean;
+        message?: string;
+      }>(
         "/saveProject",
         {
           projectId: id,
@@ -83,15 +106,21 @@ const Editor = () => {
       } else {
         toast.error(data.message || "Failed to save the code");
       }
-    } catch (err) {
-      console.error("Error Saving project:", err);
-      toast.error(err.message || "Failed to save the project.");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        console.error("Error Saving project via Axios:", err);
+        toast.error(err.message || "Failed to save the project.");
+      } else {
+        console.error("Error saving project:", err);
+        toast.error("Failed to save project.");
+      }
     }
   }, [code, id]);
 
+  // Keyboard shortcut for save
   useEffect(() => {
-    const handleSaveShortcut = (e) => {
-      if (e.ctrlKey && e.key === "s") {
+    const handleSaveShortcut = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
         e.preventDefault();
         saveProject();
       }
@@ -99,6 +128,15 @@ const Editor = () => {
     window.addEventListener("keydown", handleSaveShortcut);
     return () => window.removeEventListener("keydown", handleSaveShortcut);
   }, [saveProject]);
+
+  const extensionMap: Record<SupportedLanguage, string> = {
+    python: ".py",
+    java: ".java",
+    javascript: ".js",
+    c: ".c",
+    cpp: ".cpp",
+    bash: ".sh",
+  };
 
   // Run code using Piston API
   const runProject = async () => {
@@ -110,17 +148,8 @@ const Editor = () => {
     setRunning(true);
 
     try {
-      const extensionMap = {
-        python: ".py",
-        java: ".java",
-        javascript: ".js",
-        c: ".c",
-        cpp: ".cpp",
-        bash: ".sh",
-      };
-
-      const extension = extensionMap[projectData.projectLanguage] || "";
-      const filename = projectData.name + extension;
+      const extension = extensionMap[projectData.projectLanguage];
+      const filename = `${projectData.name}${extension}`;
 
       const res = await fetch("https://emkc.org/api/v2/piston/execute", {
         method: "POST",
@@ -139,38 +168,17 @@ const Editor = () => {
         }),
       });
 
-      const data = await res.json();
-      // const res = await api.post(
-      //   "/execute",
-      //   {
-      //     language: projectData.projectLanguage,
-      //     version: projectData.version,
-      //     files: [
-      //       {
-      //         filename,
-      //         content: code,
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Authorization: `Bearer ${localStorage.getItem("token")}`,
-      //     },
-      //   }
-      // );
-      // console.log(res);
+      const data: PistonResponse = await res.json();
 
-      // const data = res.data;
-
-      if (data) {
-        setOutput(data?.run?.output || "");
-        setError(data?.run?.code === 1);
-        setError(data?.run?.code !== 0);
+      if (data && data.run) {
+        setOutput(data.run.output ?? data.run.stdout ?? "");
+        setError(data.run.code !== 0);
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "An unknown error occurred.";
       console.error("Failed to run the project:", err);
-      toast.error(err.message || "Failed to run the project.");
+      toast.error(errorMessage);
     } finally {
       setRunning(false);
     }
@@ -190,10 +198,10 @@ const Editor = () => {
             theme="vs-dark"
             height="100%"
             width="100%"
-            language={projectData?.projectLanguage || "python"}
+            language={projectData?.projectLanguage ?? "python"}
             value={code}
             onChange={(newCode) => {
-              setCode(newCode || "");
+              setCode(newCode ?? "");
             }}
             options={{
               minimap: { enabled: false },

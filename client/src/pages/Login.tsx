@@ -1,37 +1,35 @@
-import { useState } from "react";
-import logo from "/image.png";
-
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-// import { API_BASE_URL } from "../helper.js";
-import api from "../lib/axios.js";
+import { AxiosError } from "axios";
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+import api from "../lib/axios.js";
+import logo from "/image.png";
+
+interface LoginResponse {
+  success: boolean;
+  token: string;
+  message: string;
+}
+interface LoginError {
+  success: false;
+  message: string;
+}
+
+type LoginAPIResponse = LoginResponse | LoginError;
+
+const Login: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const submitForm = async (e) => {
+  const submitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // const res = await fetch(API_BASE_URL + "/login", {
-      //   mode: "cors",
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     email: email.trim(),
-      //     password,
-      //   }),
-      // });
-
-      // const data = await res.json();
-
-      const res = await api.post(
+      const res = await api.post<LoginAPIResponse>(
         "/login",
         {
           email: email.trim(),
@@ -58,9 +56,15 @@ const Login = () => {
       } else {
         toast.error(data.message || "Login failed. Please try again.");
       }
-    } catch (err) {
-      console.error("Login error:", err);
-      toast.error(err.message || "Login failed. Please try again.");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        // safe access
+        console.error("Failed to Login via Axios", err);
+        toast.error(err.message || "Failed to Login");
+      } else {
+        console.error("Unexpected error during Login", err);
+        toast.error("Unexpected error occurred during Login.");
+      }
     } finally {
       setLoading(false);
     }
@@ -76,7 +80,7 @@ const Login = () => {
           className="w-32 sm:w-40 lg:w-48 object-contain mb-6"
           src={logo}
           alt="logo"
-            loading="lazy"
+          loading="lazy"
         />
 
         {/* EMAIL INPUT */}

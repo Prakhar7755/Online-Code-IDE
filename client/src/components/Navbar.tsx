@@ -1,9 +1,8 @@
+import React from "react";
 import logo from "/image.png";
-import { Link /* useNavigate */ } from "react-router-dom";
-// import Home from "../pages/Home.jsx";
+import { Link } from "react-router-dom";
 
-const Navbar = () => {
-  // const navigate = useNavigate();
+const Navbar: React.FC = () => {
   return (
     <header className="bg-[#0f0e0e] shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 h-[90px] flex items-center justify-between">

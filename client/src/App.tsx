@@ -1,13 +1,13 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import Home from "./pages/Home.jsx";
-import NoPage from "./pages/NoPage.jsx";
-import SignUp from "./pages/SignUp.jsx";
-import Login from "./pages/Login.jsx";
-import Editor from "./pages/Editor.jsx";
+import React, { useEffect, useState } from "react";
+import Home from "./pages/Home";
+import NoPage from "./pages/NoPage";
+import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
+import Editor from "./pages/Editor";
 import "./App.css";
 
-const App = () => {
+const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(
     () => localStorage.getItem("isLoggedIn") === "true"
   );

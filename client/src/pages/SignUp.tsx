@@ -1,37 +1,23 @@
 import logo from "/image.png";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useState } from "react";
+import React, { useState } from "react";
 import api from "../lib/axios.js";
+import { AxiosError } from "axios";
 
-const SignUp = () => {
-  const [fullname, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+const SignUp: React.FC = () => {
+  const [fullname, setFullName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
-  const submitForm = async (e) => {
+  const submitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // const res = await fetch(API_BASE_URL + "/signup", {
-      //   mode: "cors",
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     fullname: fullname.trim(),
-      //     email: email.trim(),
-      //     password,
-      //   }),
-      // });
-
-      // const data = await res.json();
-
       const res = await api.post("/signup", {
         fullname: fullname.trim(),
         email: email.trim(),
@@ -47,11 +33,15 @@ const SignUp = () => {
       } else {
         toast.error(data.message || "Failed to create the account");
       }
-    } catch (err) {
-      console.error("Signup error:", err);
-      toast.error(err.message || "Something went wrong during signup.");
-    } finally {
-      setLoading(false);
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        // safe access
+        console.error("Failed to SignUp", err);
+        toast.error(err.message || "Failed to Signup");
+      } else {
+        console.error("Unexpected error", err);
+        toast.error("Unexpected error occurred.");
+      }
     }
   };
   return (
@@ -64,7 +54,7 @@ const SignUp = () => {
           className="w-32 sm:w-40 lg:w-48 object-contain mb-6"
           src={logo}
           alt="logo"
-            loading="lazy"
+          loading="lazy"
         />
 
         {/* FULL NAME INPUT */}

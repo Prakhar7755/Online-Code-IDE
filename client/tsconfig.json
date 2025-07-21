@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["dom", "esnext"],
+    "module": "es2022",
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "types": ["vite/client", "node"],
+
+    "sourceMap": true,
+    "outDir": "./dist",
+    "removeComments": true,
+    "noEmitOnError": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+
+    "noEmit": true
+  },
+  "exclude": ["vite.config.ts"]
+}

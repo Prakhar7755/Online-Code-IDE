@@ -1,94 +1,99 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import Select from "react-select";
-// import { API_BASE_URL } from "../helper.js";
+import Select, { SingleValue } from "react-select";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-// import axios from "axios";
 import api from "../lib/axios.js";
+import { AxiosError } from "axios";
 
-const Home = () => {
-  const [isCreateModelShow, setIsCreateModelShow] = useState(false);
-  const [languageOptions, setLanguageOptions] = useState([]);
-  const [selectedLanguage, setSelectedLanguage] = useState(null); // State to store selected language
+interface LanguageOption {
+  label: string;
+  value: string;
+  version: string;
+}
 
-  const [isEditModelShow, setIsEditModelShow] = useState(false);
+interface Project {
+  _id: string;
+  name: string;
+  projectLanguage: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+const Home: React.FC = () => {
+  const [isCreateModalShow, setIsCreateModalShow] = useState(false);
+  const [isEditModalShow, setIsEditModalShow] = useState(false);
+  const [languageOptions, setLanguageOptions] = useState<LanguageOption[]>([]);
+  const [selectedLanguage, setSelectedLanguage] =
+    useState<LanguageOption | null>(null);
+  const [projects, setProjects] = useState<Project[] | null>(null);
+  const [name, setName] = useState("");
+  const [editProjId, setEditProjId] = useState<string>("");
 
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-
+  // Styles for react-select
   const customStyles = {
-    control: (provided) => ({
+    control: (provided: any) => ({
       ...provided,
       backgroundColor: "#000",
       borderColor: "#555",
       color: "#fff",
       padding: "5px",
     }),
-    menu: (provided) => ({
+    menu: (provided: any) => ({
       ...provided,
       backgroundColor: "#000",
       color: "#fff",
       width: "100%",
     }),
-    option: (provided, state) => ({
+    option: (provided: any, state: any) => ({
       ...provided,
       backgroundColor: state.isFocused ? "#333" : "#000",
       color: "#fff",
       cursor: "pointer",
     }),
-    singleValue: (provided) => ({
+    singleValue: (provided: any) => ({
       ...provided,
       color: "#fff",
     }),
-    placeholder: (provided) => ({
+    placeholder: (provided: any) => ({
       ...provided,
       color: "#aaa",
     }),
   };
 
+  // Fetch runtimes from Piston API and filter relevant languages
   const getRunTimes = async () => {
-    let res = await fetch("https://emkc.org/api/v2/piston/runtimes");
-    let data = await res.json();
-    // const res = await axios.get("https://emkc.org/api/v2/piston/runtimes");
-    // const res = await api.get("/runtimes", {
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${localStorage.getItem("token")}`,
-    //   },
-    // });
-    // console.log(res);
-    // const data = res.data;
+    try {
+      const res = await fetch("https://emkc.org/api/v2/piston/runtimes");
+      const data = await res.json();
 
-    // Filter only the required languages
-    const filteredLanguages = [
-      "python",
-      "javascript",
-      "c",
-      "c++",
-      "java",
-      "bash",
-    ];
+      const filteredLanguages = [
+        "python",
+        "javascript",
+        "c",
+        "c++",
+        "java",
+        "bash",
+      ];
 
-    const options = data
-      .filter((runtime) => filteredLanguages.includes(runtime.language))
-      .map((runtime) => ({
-        label: `${runtime.language} (${runtime.version})`,
-        value: runtime.language === "c++" ? "cpp" : runtime.language,
-        version: runtime.version,
-      }));
+      const options = data
+        .filter((runtime: any) => filteredLanguages.includes(runtime.language))
+        .map((runtime: any) => ({
+          label: `${runtime.language} (${runtime.version})`,
+          value: runtime.language === "c++" ? "cpp" : runtime.language,
+          version: runtime.version,
+        }));
 
-    setLanguageOptions(options);
+      setLanguageOptions(options);
+    } catch (error) {
+      console.error("Failed to fetch runtimes:", error);
+      toast.error("Failed to load language runtimes.");
+    }
   };
 
-  const handleLanguageChange = (selectedOption) => {
-    setSelectedLanguage(selectedOption); // Update selected language state
-    console.log("Selected language:", selectedOption);
-  };
-
-  const [projects, setProjects] = useState(null);
-
+  // Fetch user's projects
   const getProjects = async () => {
     try {
       const res = await api.get("/project", {
@@ -105,9 +110,16 @@ const Home = () => {
       } else {
         toast.error(data.message || "Failed to fetch projects.");
       }
-    } catch (error) {
-      console.error("❌ getProjects Error:", error.message);
-      toast.error("An error occurred while fetching projects.");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        console.error("❌ getProjects Error via Axios:", err);
+        toast.error(
+          err.message || "An error occurred while fetching projects."
+        );
+      } else {
+        console.error("❌ getProjects Error:", err);
+        toast.error("An error occurred while fetching projects.");
+      }
     }
   };
 
@@ -116,12 +128,27 @@ const Home = () => {
     getRunTimes();
   }, []);
 
+  // Handle language selection change
+  const handleLanguageChange = (option: SingleValue<LanguageOption>) => {
+    setSelectedLanguage(option);
+  };
+
+  // Create new project
   const createProject = async () => {
+    if (!selectedLanguage) {
+      toast.error("Please select a language.");
+      return;
+    }
+    if (name.trim().length < 3 || name.trim().length > 20) {
+      toast.error("Project name must be between 3 and 20 characters.");
+      return;
+    }
+
     try {
       const res = await api.post(
         "/createProject",
         {
-          name: name,
+          name: name.trim(),
           projectLanguage: selectedLanguage.value,
           version: selectedLanguage.version,
         },
@@ -137,20 +164,32 @@ const Home = () => {
 
       if (data.success) {
         setName("");
-        navigate("/editor/" + data.projectId);
-        window.location.reload();
+        setSelectedLanguage(null);
+        setIsCreateModalShow(false);
+        navigate(`/editor/${data.projectId}`);
       } else {
         toast.error(data.message || "Failed to create project.");
       }
-    } catch (error) {
-      console.error("❌ createProject Error:", error.message);
-      toast.error("An error occurred while creating the project.");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        // safe access
+        console.error("❌ createProject Error via Axios:", err);
+        toast.error(
+          err.message || "An error occurred while creating the project."
+        );
+      } else {
+        console.error("❌ createProject Error:", err);
+        toast.error("An error occurred while creating the project.");
+      }
     }
+
+   
   };
 
-  const deleteProject = async (id) => {
-    const conf = confirm(" ⚠️ Are you sure you want to delete this project?");
-    if (!conf) return;
+  // Delete a project
+  const deleteProject = async (id: string) => {
+    if (!window.confirm("⚠️ Are you sure you want to delete this project?"))
+      return;
 
     try {
       const { data } = await api.delete("/deleteProject", {
@@ -168,20 +207,24 @@ const Home = () => {
       } else {
         toast.error(data.message);
       }
-    } catch (error) {
+    } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to delete project");
     }
   };
 
-  const [editProjId, setEditProjId] = useState("");
-
+  // Update project name
   const updateProj = async () => {
+    if (name.trim().length === 0) {
+      toast.error("Project name cannot be empty.");
+      return;
+    }
+
     try {
       const { data } = await api.put(
         "/editProject",
         {
           projectId: editProjId,
-          name: name,
+          name: name.trim(),
         },
         {
           headers: {
@@ -191,31 +234,29 @@ const Home = () => {
       );
 
       if (data.success) {
-        setIsEditModelShow(false);
+        setIsEditModalShow(false);
         setName("");
         setEditProjId("");
         getProjects();
+        toast.success("Project updated successfully.");
       } else {
         toast.error(data.message);
-        setIsEditModelShow(false);
-        setName("");
-        setEditProjId("");
-        getProjects();
       }
-    } catch (error) {
+    } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to update project");
-      setIsEditModelShow(false);
+    } finally {
+      setIsEditModalShow(false);
       setName("");
       setEditProjId("");
-      getProjects();
     }
   };
 
-  const getLanguageIcon = (lang) => {
+  // Get language icon URL
+  const getLanguageIcon = (lang: string) => {
     if (!lang) return "";
     const normalizedLang = lang.toLowerCase().replace("c++", "cpp");
 
-    const icons = {
+    const icons: Record<string, string> = {
       python: "/languages/python.png",
       javascript: "/languages/js.png",
       cpp: "/languages/CPP.png",
@@ -237,7 +278,7 @@ const Home = () => {
           Welcome to Your Workplace
         </h3>
         <button
-          onClick={() => setIsCreateModelShow(true)}
+          onClick={() => setIsCreateModalShow(true)}
           className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
         >
           Create Project
@@ -249,13 +290,12 @@ const Home = () => {
         {projects && projects.length > 0 ? (
           projects.map((project) => (
             <div
-              // key={index}
               key={project._id}
               className="flex flex-col md:flex-row items-center justify-between gap-4 bg-[#0f0e0e] p-4 rounded-lg shadow mb-4"
             >
               {/* Project Info */}
               <div
-                onClick={() => navigate("/editor/" + project._id)}
+                onClick={() => navigate(`/editor/${project._id}`)}
                 className="flex items-center gap-4 cursor-pointer w-full"
               >
                 <img
@@ -268,11 +308,9 @@ const Home = () => {
                   <h3 className="text-xl font-semibold text-white">
                     {project.name}
                   </h3>
-
                   <p className="text-sm text-gray-400">
                     Created: {new Date(project.createdAt).toLocaleDateString()}
                   </p>
-
                   <p className="text-sm text-gray-500">
                     Updated: {new Date(project.updatedAt).toLocaleDateString()}
                   </p>
@@ -283,7 +321,7 @@ const Home = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => {
-                    setIsEditModelShow(true);
+                    setIsEditModalShow(true);
                     setEditProjId(project._id);
                     setName(project.name);
                   }}
@@ -306,12 +344,13 @@ const Home = () => {
       </div>
 
       {/* Create Project Modal */}
-      {isCreateModelShow && (
+      {isCreateModalShow && (
         <div
           onClick={(e) => {
-            if (e.target.classList.contains("modelCon")) {
-              setIsCreateModelShow(false);
+            if ((e.target as Element).classList.contains("modelCon")) {
+              setIsCreateModalShow(false);
               setName("");
+              setSelectedLanguage(null);
             }
           }}
           className="modelCon fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -334,31 +373,29 @@ const Home = () => {
               options={languageOptions}
               styles={customStyles}
               onChange={handleLanguageChange}
+              value={selectedLanguage}
+              isClearable
             />
             {selectedLanguage && (
-              <>
-                <p className="text-sm text-green-500 mt-2">
-                  Selected Language: {selectedLanguage.label}
-                </p>
-                <button
-                  onClick={createProject}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-4 transition"
-                >
-                  Create
-                </button>
-              </>
+              <button
+                onClick={createProject}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-4 transition"
+              >
+                Create
+              </button>
             )}
           </div>
         </div>
       )}
 
       {/* Edit Project Modal */}
-      {isEditModelShow && (
+      {isEditModalShow && (
         <div
           onClick={(e) => {
-            if (e.target.classList.contains("modelCon")) {
-              setIsEditModelShow(false);
+            if ((e.target as Element).classList.contains("modelCon")) {
+              setIsEditModalShow(false);
               setName("");
+              setEditProjId("");
             }
           }}
           className="modelCon fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
