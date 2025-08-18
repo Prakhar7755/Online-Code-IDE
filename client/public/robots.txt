@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://online-code-ide-mu83.onrender.com/sitemap.xml

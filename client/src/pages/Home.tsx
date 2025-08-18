@@ -257,12 +257,12 @@ const Home: React.FC = () => {
     const normalizedLang = lang.toLowerCase().replace("c++", "cpp");
 
     const icons: Record<string, string> = {
-      python: "/languages/python.png",
-      javascript: "/languages/js.png",
-      cpp: "/languages/CPP.png",
-      c: "/languages/c.png",
-      java: "/languages/java.png",
-      bash: "/languages/bash.png",
+      python: "/languages/python.webp",
+      javascript: "/languages/js.webp",
+      cpp: "/languages/CPP.webp",
+      c: "/languages/c.webp",
+      java: "/languages/java.webp",
+      bash: "/languages/bash.webp",
     };
 
     return icons[normalizedLang] || "";
@@ -279,7 +279,7 @@ const Home: React.FC = () => {
         </h3>
         <button
           onClick={() => setIsCreateModalShow(true)}
-          className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
+          className="bg-blue-700 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
         >
           Create Project
         </button>
@@ -308,10 +308,10 @@ const Home: React.FC = () => {
                   <h3 className="text-xl font-semibold text-white">
                     {project.name}
                   </h3>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-gray-300">
                     Created: {new Date(project.createdAt).toLocaleDateString()}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-300">
                     Updated: {new Date(project.updatedAt).toLocaleDateString()}
                   </p>
                 </div>
@@ -331,7 +331,7 @@ const Home: React.FC = () => {
                 </button>
                 <button
                   onClick={() => deleteProject(project._id)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition"
+                  className="bg-red-700 hover:bg-red-500 text-white px-4 py-2 rounded-md transition"
                 >
                   Delete
                 </button>
@@ -379,7 +379,7 @@ const Home: React.FC = () => {
             {selectedLanguage && (
               <button
                 onClick={createProject}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-4 transition"
+                className="bg-blue-700 hover:bg-blue-500 text-white px-4 py-2 rounded-md mt-4 transition"
               >
                 Create
               </button>
@@ -413,7 +413,7 @@ const Home: React.FC = () => {
             />
             <button
               onClick={updateProj}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
+              className="bg-blue-700 hover:bg-blue-500 text-white px-4 py-2 rounded-md transition"
             >
               Update
             </button>

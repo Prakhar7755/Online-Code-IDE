@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "/image.png";
+import logo from "/image.webp";
 import { Link } from "react-router-dom";
 
 const Navbar: React.FC = () => {
@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
         {/* Logo */}
         <Link to="/">
           <img
-            loading={"lazy"}
+            fetchPriority="high"
             src={logo}
             alt="Logo"
             className="w-[150px] object-contain"
@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
               localStorage.removeItem("isLoggedIn");
               window.location.reload();
             }}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md font-medium transition duration-200"
+            className="bg-red-700 hover:bg-red-400 text-white px-4 py-2 rounded-md font-medium transition duration-200"
           >
             Logout
           </button>

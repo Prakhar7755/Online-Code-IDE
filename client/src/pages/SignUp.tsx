@@ -1,4 +1,4 @@
-import logo from "/image.png";
+import logo from "/image.webp";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import React, { useState } from "react";
@@ -99,9 +99,9 @@ const SignUp: React.FC = () => {
           />
         </div>
 
-        <p className="text-gray-400 text-sm mb-4 w-full text-left">
+        <p className="text-gray-600 text-sm mb-4 w-full text-left">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-500 hover:underline">
+          <Link to="/login" className="text-blue-300 hover:underline">
             Login
           </Link>
         </p>
@@ -110,7 +110,7 @@ const SignUp: React.FC = () => {
           type="submit"
           disabled={loading}
           value={loading ? "Signing Up..." : "Sign Up"}
-          className={`w-full py-3 rounded-md bg-blue-600 hover:bg-blue-700 transition-colors text-white font-semibold ${
+          className={`w-full py-3 rounded-md bg-blue-400 hover:bg-blue-700 transition-colors text-white font-semibold ${
             loading ? "opacity-50 cursor-not-allowed" : ""
           }`}
         />

@@ -5,17 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build  && node inline-css.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
-    "monaco-editor": "^0.47.0",
     "@tailwindcss/vite": "^4.1.11",
     "@types/axios": "^0.14.4",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.10.0",
+    "critters": "^0.0.25",
+    "monaco-editor": "^0.47.0",
     "online-code-ide": "file:..",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 
 import api from "../lib/axios.js";
-import logo from "/image.png";
+import logo from "/image.webp";
 
 interface LoginResponse {
   success: boolean;
@@ -111,9 +111,9 @@ const Login: React.FC = () => {
           />
         </div>
 
-        <p className="text-gray-400 text-sm mb-4 w-full text-left">
+        <p className="text-gray-600 text-sm mb-4 w-full text-left">
           Don&apos;t have an account?{" "}
-          <Link to="/signup" className="text-blue-500 hover:underline">
+          <Link to="/signup" className="text-blue-300 hover:underline">
             Sign Up
           </Link>
         </p>
@@ -121,7 +121,7 @@ const Login: React.FC = () => {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-3 rounded-md bg-blue-600 hover:bg-blue-700 transition-colors text-white font-semibold ${
+          className={`w-full py-3 rounded-md bg-blue-700 hover:bg-blue-500 transition-colors text-white font-semibold ${
             loading ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
